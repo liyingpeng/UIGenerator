@@ -1,0 +1,22 @@
+{
+  "id" : "userProfileView.json",
+  "properties": {
+    "titleLabel" : {
+      "type": "label",
+      "properties" : {
+        "color" : "1234567",
+        "font" : 12,
+        "text" : "1234"
+        }
+      }
+    },
+    "subTitleLabel" : {
+      "type": "label",
+      "properties" : {
+        "color" : "1234567",
+        "font" : 12,
+        "text" : "1234"
+      }
+    }
+  }
+}

@@ -1,0 +1,6 @@
+cd grammer
+antlr4 -Dlanguage=Python2 ./JSONLexer.g4
+antlr4 -Dlanguage=Python2 ./JSONParser.g4
+co file to Parser
+cd ..
+python HTTPIDL.py -f userProfileView.json -o JSONDemo

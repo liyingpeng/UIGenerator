@@ -8,85 +8,51 @@ options {
 }
 
 entry
-   : LCURLY ID COLON STRING (COMMA properties)? RCURLY
+   : LCURLY identifier COLON filename (COMMA properties)? RCURLY
    | LCURLY RCURLY
    ;
 
+identifier
+   : STRING
+   ;
+
+filename
+   : STRING
+   ;
+
+propertiesIdentifier
+    : STRING
+    ;
+
 properties
-   : PROPERTIES COLON LCURLY oneControl (COMMA oneControl)* RCURLY
-   | PROPERTIES COLON LCURLY RCURLY
+   : propertiesIdentifier COLON LCURLY oneControl (COMMA oneControl)* RCURLY
+   | propertiesIdentifier COLON LCURLY RCURLY
    ;
 
 // UIKIT control
 
 oneControl
-   : label
-   | button
-   | image
-   | view
-   ;
-
-label
-   : STRING COLON LCURLY labelType (COMMA uiKitProperties)? RCURLY
+   : identifier COLON LCURLY STRING COLON controlType (COMMA uiKitProperties)? RCURLY
    | nullProperty
    ;
 
-button
-   : STRING COLON LCURLY buttonType (COMMA uiKitProperties)? RCURLY
-   | nullProperty
-   ;
-
-image
-   : STRING COLON LCURLY imageType (COMMA uiKitProperties)? RCURLY
-   | nullProperty
-   ;
-
-view
-   : STRING COLON LCURLY viewType (COMMA uiKitProperties)? RCURLY
-   | nullProperty
+controlType
+   : STRING
    ;
 
 uiKitProperties
-   : PROPERTIES COLON LCURLY oneProperty (COMMA oneProperty)* RCURLY
-   | PROPERTIES COLON LCURLY RCURLY
+   : propertiesIdentifier COLON LCURLY oneProperty (COMMA oneProperty)* RCURLY
+   | propertiesIdentifier COLON LCURLY RCURLY
    ;
 
 // basic property
 
 oneProperty
-   : color
-   | font
-   | text
+   : propertyName COLON value
    ;
 
-color
-   : COLOR COLON STRING
-   ;
-
-font
-   : FONT COLON NUMBER
-   ;
-
-text
-   : TEXT COLON STRING
-   ;
-
-// basic type
-
-labelType
-   : STRING COLON LABEL
-   ;
-
-buttonType
-   : STRING COLON BUTTON
-   ;
-
-imageType
-   : STRING COLON IMAGE
-   ;
-
-viewType
-   : STRING COLON VIEW
+propertyName
+   : STRING
    ;
 
 // json grammer

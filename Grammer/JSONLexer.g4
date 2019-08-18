@@ -3,24 +3,12 @@
 // Derived from http://json.org
 lexer grammar JSONLexer;
 
-SLASH
-    : '/'
-    ;
-
 LCURLY
     : '{'
     ;
 
 RCURLY
     : '}'
-    ;
-
-LPAREN
-    : '('
-    ;
-
-RPAREN
-    : ')'
     ;
 
 LSQUARE
@@ -35,32 +23,12 @@ DOLLAR
     : '$'
     ;
 
-LABRACKET
-    : '<'
-    ;
-
-RABRACKET
-    : '>'
-    ;
-
 COMMA
     : ','
     ;
 
-ASSIGN
-    : '='
-    ;
-
-SEMICOLON
-    : ';'
-    ;
-
 COLON
     : ':'
-    ;
-
-ESCAPE
-    : '\\'
     ;
 
 TRUE
@@ -78,53 +46,6 @@ NULL
 STRING
    : '"' (ESC | SAFECODEPOINT)* '"'
    ;
-
-
-// business define
-
-TYPE
-    : '"''type''"'
-    ;
-
-ID
-    : '"''id''"'
-    ;
-
-PROPERTIES
-    : '"''properties''"'
-    ;
-
-COLOR
-    : '"''color''"'
-    ;
-
-BACKGROUNDCOLOR
-    : '"''backgroundColor''"'
-    ;
-
-FONT
-    : '"''font''"'
-    ;
-
-TEXT
-    : '"''text''"'
-    ;
-
-LABEL
-    : '"''label''"'
-    ;
-
-BUTTON
-    : '"''button''"'
-    ;
-
-IMAGE
-    : '"''image''"'
-    ;
-
-VIEW
-    : '"''view''"'
-    ;
 
 fragment ESC
    : '\\' (["\\/bfnrt] | UNICODE)

@@ -1,20 +1,21 @@
 {
-  "id" : "userProfileView.json",
+  "id" : "PUGLiveUserProfileView",
   "properties": {
     "titleLabel" : {
       "type": "label",
       "properties" : {
-        "color" : "1234567",
-        "font" : 12,
+        "color" : "ffffff",
+        "font" : 123,
         "text" : "1234"
-        }
       }
     },
     "subTitleLabel" : {
       "type": "label",
       "properties" : {
-        "color" : "1234567",
-        "font" : 12,
+        "color" : [123,123,123, 1.0],
+        "layer.cornerRadius" : 4.0,
+        "layer.masksToBounds" : "false",
+        "font" : 2123,
         "text" : "1234"
       }
     }

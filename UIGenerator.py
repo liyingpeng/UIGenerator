@@ -16,13 +16,13 @@ Options:
 """
 from docopt import docopt
 
-from Compiler import HTTPIDLCompiler
+from Compiler import UIGeneratorCompiler
 
 if __name__ == '__main__':
   arguments = docopt(__doc__, version='1.1.17')
   # print(arguments)
   output_directory_path = arguments['-o']
-  compiler = HTTPIDLCompiler()
+  compiler = UIGeneratorCompiler()
   if arguments['-d']:
     input_directory_path = arguments['-d']
     compiler.assemble_dir(input_directory_path, output_directory_path)

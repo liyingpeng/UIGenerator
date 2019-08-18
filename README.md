@@ -21,3 +21,4 @@ alias grun='java -Xmx500M -cp "/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPAT
 	a.通过嵌套类型支持
 	b.通过指定superView type支持
 3. 支持autolayout
+4. 支持高级布局技巧

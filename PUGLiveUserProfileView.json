@@ -1,23 +1,62 @@
 {
-  "id" : "PUGLiveUserProfileView",
-  "properties": {
-    "titleLabel" : {
-      "type": "label",
-      "properties" : {
-        "color" : "ffffff",
-        "font" : 123,
-        "text" : "1234"
-      }
-    },
-    "subTitleLabel" : {
-      "type": "label",
-      "properties" : {
-        "color" : [123,123,123, 1.0],
-        "layer.cornerRadius" : 4.0,
-        "layer.masksToBounds" : "false",
-        "font" : 2123,
-        "text" : "1234"
-      }
+  "titleLabel" : {
+    "type": "label",
+    "properties" : {
+      "color" : "ffffff",
+      "font" : 123,
+      "text" : "1234"
+    }
+  },
+  "subTitleLabel" : {
+    "type": "label",
+    "properties" : {
+      "subviews": {
+        "titleSubLabel" : {
+          "type": "label",
+          "properties" : {
+            "color" : "ffffff",
+            "font" : 123,
+            "text" : "1234"
+          }
+        },
+        "titleSubLabel2" : {
+          "type": "label",
+          "properties" : {
+            "color" : "ffffff",
+            "font" : 123,
+            "text" : "1234"
+          }
+        }
+      },
+      "color" : [123,123,123, 1.0],
+      "layer.cornerRadius" : 4.0,
+      "layer.masksToBounds" : "false",
+      "font" : 2123,
+      "text" : "1234"
+    }
+  },
+  "titleView" : {
+    "type": "view",
+    "properties" : {
+      "color" : [123,123,123, 1.0],
+      "layer.cornerRadius" : 4.0,
+      "layer.masksToBounds" : "false"
+    }
+  },
+  "titleButton" : {
+    "type": "button",
+    "properties" : {
+      "color" : [123,123,123, 1.0],
+      "layer.cornerRadius" : 4.0,
+      "layer.masksToBounds" : "false"
+    }
+  },
+  "titleImage" : {
+    "type": "image",
+    "properties" : {
+      "color" : [123,123,123, 1.0],
+      "layer.cornerRadius" : 4.0,
+      "layer.masksToBounds" : "false"
     }
   }
 }

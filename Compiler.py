@@ -53,5 +53,5 @@ class UIGeneratorCompiler:
         stream = CommonTokenStream(lexer)
         parser = JSONParser(stream)
         parser.addErrorListener(error_listener)
-        tree = parser.entry()
+        tree = parser.obj()
         return tree

@@ -20,6 +20,7 @@ class CodeGen:
 				else:
 					raise
 		self.parse_tree = parse_tree
+		self.output_file_name = output_file_name
 		self.output_file_m = open(os.path.join(output_directory_path, output_file_name + '.m'), 'w')
 		self.output_file_h = open(os.path.join(output_directory_path, output_file_name + '.h'), 'w')
 		self.currentFile = self.output_file_h
@@ -48,10 +49,9 @@ class CodeGen:
 		self.generate_m_file()
 
 	def generate_h_file(self):
-		filename = eval(self.parse_tree.filename().getText())
 		self.currentFile = self.output_file_h
 		self.write_line('//')
-		self.write_line('//  ' + filename + '.h')
+		self.write_line('//  ' + self.output_file_name + '.h')
 		self.write_line('//  putong')
 		self.write_line('//  Created by liyingpeng on ' + time.strftime("%Y/%m/%d", time.localtime())  + '.')
 		self.write_line('//  Copyright © ' + time.strftime("%Y", time.localtime()) + ' P1. All rights reserved.')
@@ -61,7 +61,7 @@ class CodeGen:
 		self.write_blank_lines(1)
 		self.write_line('NS_ASSUME_NONNULL_BEGIN')
 		self.write_blank_lines(1)
-		self.write_line('@interface ' + filename + ' : UIView')
+		self.write_line('@interface ' + self.output_file_name + ' : UIView')
 		self.write_blank_lines(1)
 		self.write_line('@end')
 		self.write_blank_lines(1)
@@ -69,24 +69,23 @@ class CodeGen:
 
 	def generate_m_file(self):
 		self.currentFile = self.output_file_m
-		filename = eval(self.parse_tree.filename().getText())
 		self.write_line('//')
-		self.write_line('//  ' + filename + '.m')
+		self.write_line('//  ' + self.output_file_name + '.m')
 		self.write_line('//  putong')
 		self.write_line('//  Created by liyingpeng on ' + time.strftime("%Y/%m/%d", time.localtime())  + '.')
 		self.write_line('//  Copyright © ' + time.strftime("%Y", time.localtime()) + ' P1. All rights reserved.')
 		self.write_line('//')
 		self.write_blank_lines(1)
-		self.write_line('#import "' + filename + '.h"')
+		self.write_line('#import "' + self.output_file_name + '.h"')
 		self.generateBasicImport()
 		self.write_blank_lines(1)
-		self.write_line('@interface ' + filename + ' ()')
+		self.write_line('@interface ' + self.output_file_name + ' ()')
 		self.write_blank_lines(1)
 		self.generatePropertyList()
 		self.write_blank_lines(1)
 		self.write_line('@end')
 		self.write_blank_lines(1)
-		self.write_line('@implementation ' + filename)
+		self.write_line('@implementation ' + self.output_file_name)
 		self.write_blank_lines(1)
 		self.generateInit()
 		self.write_blank_lines(1)
@@ -119,22 +118,34 @@ class CodeGen:
 		self.write_line('- (void)setupSubviews {')
 		self.push_indent()
 		for control in self.controlList():
-			self.write_line('[self addSubview:self.' + eval(control.identifier().getText()) + '];')
+			self.write_line('[self addSubview:self.' + eval(control.key().getText()) + '];')
 		pass
 		self.pop_indent()
 		self.write_line('}')
 		pass
 
 	def controlList(self):
-		return self.parse_tree.properties().oneControl()
+		return self.parse_tree.pair()
 
 	def generatePropertyList(self):
 		for control in self.controlList():
-			self.write_line('@property (nonatomic, strong) ' + self.parseControlTypeString(control) + ' *' + eval(control.identifier().getText()) + ';')
+			self.write_line('@property (nonatomic, strong) ' + self.parseControlTypeString(control) + ' *' + eval(control.key().getText()) + ';')
+		pass
+
+	def typeFor(self, control):
+		if len(control.value().obj().pair()) <= 0:
+			return []
+		return eval(control.value().obj().pair()[0].value().getText())
+		pass
+
+	def propertiesFor(self, control):
+		if len(control.value().obj().pair()) <= 1:
+			return []
+		return control.value().obj().pair()[1].value().obj().pair()
 		pass
 
 	def parseControlTypeString(self, control):
-		controlType = eval(control.controlType().getText())
+		controlType = self.typeFor(control)
 		if controlType == "label":
 			return "UILabel"
 		elif controlType == "button":
@@ -148,7 +159,7 @@ class CodeGen:
 
 	def generateLazilyLoadProperties(self):
 		for control in self.controlList():
-			propertyName = eval(control.identifier().getText())
+			propertyName = eval(control.key().getText())
 			instanceName = '_' + propertyName
 			self.write_line('- (' + self.parseControlTypeString(control) + ' *)' + propertyName + ' {')
 			self.push_indent()
@@ -175,17 +186,20 @@ class CodeGen:
 		pass
 
 	def setPropertyFor(self, control, instanceName):
-		properties = control.uiKitProperties().oneProperty()
+		properties = self.propertiesFor(control)
 		for property in properties:
-			propertyName = eval(property.propertyName().getText())
+			propertyName = eval(property.key().getText())
 			propertyValue = eval(property.value().getText())
-			print type(propertyValue)
 			if propertyName == "color" or propertyName == "backgroundColor" or propertyName == "textColor":
 				self.setColorValueFor(instanceName, propertyName, propertyValue)
 			elif propertyName == "font":
 				self.write_line(instanceName + '.' + propertyName + ' = mSystemFont(' + str(propertyValue) + ');')
+			elif propertyValue == "false":
+				self.write_line(instanceName + '.' + propertyName + ' = NO;')
+			elif propertyValue == "true":
+				self.write_line(instanceName + '.' + propertyName + ' = YES;')
 			elif isinstance(propertyValue, int) or isinstance(propertyValue, float):
-				self.write_line(instanceName + '.' + propertyName + ' = @(' + str(propertyValue) + ');')
+				self.write_line(instanceName + '.' + propertyName + ' = ' + str(propertyValue) + ';')
 			elif isinstance(propertyValue, str):
 				self.write_line(instanceName + '.' + propertyName + ' = @"' + propertyValue + '";')
 		pass

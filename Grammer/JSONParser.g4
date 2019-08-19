@@ -7,63 +7,13 @@ options {
     tokenVocab = JSONLexer;
 }
 
-entry
-   : LCURLY identifier COLON filename (COMMA properties)? RCURLY
-   | LCURLY RCURLY
-   ;
-
-identifier
-   : STRING
-   ;
-
-filename
-   : STRING
-   ;
-
-propertiesIdentifier
-    : STRING
-    ;
-
-properties
-   : propertiesIdentifier COLON LCURLY oneControl (COMMA oneControl)* RCURLY
-   | propertiesIdentifier COLON LCURLY RCURLY
-   ;
-
-// UIKIT control
-
-oneControl
-   : identifier COLON LCURLY STRING COLON controlType (COMMA uiKitProperties)? RCURLY
-   | nullProperty
-   ;
-
-controlType
-   : STRING
-   ;
-
-uiKitProperties
-   : propertiesIdentifier COLON LCURLY oneProperty (COMMA oneProperty)* RCURLY
-   | propertiesIdentifier COLON LCURLY RCURLY
-   ;
-
-// basic property
-
-oneProperty
-   : propertyName COLON value
-   ;
-
-propertyName
-   : STRING
-   ;
-
-// json grammer
-
 obj
    : LCURLY pair (COMMA pair)* RCURLY
    | LCURLY RCURLY
    ;
 
 pair
-   : STRING COLON value
+   : key COLON value
    ;
 
 array
@@ -81,6 +31,6 @@ value
    | NULL
    ;
 
-nullProperty
-   : STRING COLON LCURLY RCURLY
+key
+   : STRING
    ;

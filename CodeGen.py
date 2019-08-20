@@ -25,24 +25,39 @@ class CodeGen:
 		self.output_file_h = open(os.path.join(output_directory_path, output_file_name + '.h'), 'w')
 		self.currentFile = self.output_file_h
 		self.indent = 0
+		self.blank = 0
 
-	def write_line(self, text):
+	def write_line_(self, text, is_blank):
+		if not is_blank:
+			self.pop_blank()
 		# 1 indent = 4 blank space
 		indent = reduce(lambda so_far, so_good: so_far + '    ', range(0, self.indent), '')
 		# print indent + text
-		self.currentFile.write((indent + text) + '\n')
+		self.currentFile.write((indent + text) + '\n') 
+
+	def write_line(self, text):
+		self.write_line_(text, False)
 
 	def write_blank_lines(self, count):
-		if count <= 0:
+		if count <= self.blank:
 			return
-		blank_lines = reduce(lambda so_far, so_good: so_far + '\n', range(0, count - 1), '')
-		self.write_line(blank_lines)
-
+		blank_lines = reduce(lambda so_far, so_good: so_far + '\n', range(0, count - self.blank - 1), '')
+		self.push_blank(count)
+		self.write_line_(blank_lines, True)
+		
 	def push_indent(self):
 		self.indent += 1
 
 	def pop_indent(self):
 		self.indent -= 1
+
+	def push_blank(self, count):
+		self.blank += count
+
+	def pop_blank(self):
+		if self.blank == 0:
+			return
+		self.blank -= 1
 
 	def generate_entry(self):
 		self.generate_h_file()
@@ -122,6 +137,8 @@ class CodeGen:
 		self.write_line('- (void)setupSubviews {')
 		self.push_indent()
 		self.writeAddSubviewsForControls(controlList)
+		self.write_blank_lines(1)
+		self.writeLayoutForControls(controlList)
 		self.pop_indent()
 		self.write_line('}')
 		pass
@@ -150,8 +167,40 @@ class CodeGen:
 				self.write_line('@property (nonatomic, strong) ' + self.parseControlTypeString(control) + ' *' + eval(control.key().getText()) + ';')
 		pass
 
-	def generateLazilyLoadPropertiesFor(self, control_list):
-		for control in control_list:
+	def writeLayoutForControls(self, controlList):
+		for control in controlList:
+			self.write_blank_lines(1)
+			propertyName = eval(control.key().getText())
+			self.write_line('[self.' + propertyName + ' mas_makeConstraints:^(MASConstraintMaker *make) {')
+			self.push_indent()
+
+			layoutItems = self.layoutForControl(control)
+			if layoutItems is None:
+				self.write_line('make.edges.equalTo(self.' + propertyName + '.superview);')
+			else:
+				for layout in layoutItems:
+					key = eval(layout.key().getText())
+					value = eval(layout.value().getText())
+					if isinstance(value, int) or isinstance(value, float):
+						self.write_line('make.' + key + '.equalTo(self.' + propertyName + '.superview);')
+					else:
+						refrence = self.refrenceForLayout(layout)
+						offset = self.offsetForLayout(layout)
+						if offset is None:
+							self.write_line('make.' + key + '.equalTo(self.' + refrence[0] + '.mas_' + refrence[1] + ');')
+						else:
+							self.write_line('make.' + key + '.equalTo(self.' + refrence[0] + '.mas_' + refrence[1] + ').offset(' + str(offset) + ');')
+					
+			self.pop_indent()
+			self.write_line('}];')
+
+			subviews = self.subviewsForControl(control)
+			if subviews is not None:
+				self.writeLayoutForControls(subviews)
+		pass
+
+	def generateLazilyLoadPropertiesFor(self, controlList):
+		for control in controlList:
 			propertyName = eval(control.key().getText())
 			instanceName = '_' + propertyName
 
@@ -251,6 +300,32 @@ class CodeGen:
 		for pairItem in control.value().obj().pair():
 			if eval(pairItem.key().getText()) == "subviews":
 				return pairItem.value().obj().pair()
+		return None
+
+	def layoutForControl(self, control):
+		for pairItem in control.value().obj().pair():
+			if eval(pairItem.key().getText()) == "layout":
+				return pairItem.value().obj().pair()
+		return None
+
+	def refrenceForLayout(self, layout):
+		for layoutItem in layout.value().obj().pair():
+			if eval(layoutItem.key().getText()) == "refrence":
+				refrence = eval(layoutItem.value().getText())
+				refrenceList = refrence.split('.')
+				if len(refrenceList) == 0:
+					return None
+				elif len(refrenceList) == 1:
+					key = eval(layout.key().getText())
+					return (refrenceList[0], key)
+				else:
+					return (refrenceList[0], refrenceList[1])
+		return None
+	
+	def offsetForLayout(self, layout):
+		for layoutItem in layout.value().obj().pair():
+			if eval(layoutItem.key().getText()) == "offset":
+				return eval(layoutItem.value().getText())
 		return None
 
 

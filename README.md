@@ -16,8 +16,8 @@ alias grun='java -Xmx500M -cp "/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPAT
 
 
 // TODO:
-1. 支持BOOL 类型 value
-2. 支持superview
+1. 支持BOOL 类型 value				done
+2. 支持superview					done
 	a.通过嵌套类型支持
 	b.通过指定superView type支持
 3. 支持autolayout

@@ -20,7 +20,6 @@
 @property (nonatomic, strong) UILabel *subLabel2;
 @property (nonatomic, strong) UIButton *subButton2;
 
-
 @property (nonatomic, strong) UIView *view;
 @property (nonatomic, strong) UIButton *button;
 @property (nonatomic, strong) UIImageView *image;
@@ -49,10 +48,52 @@
     [self addSubview:self.subLabel2];
     [self addSubview:self.subButton2];
     
-    
     [self addSubview:self.view];
     [self addSubview:self.button];
     [self addSubview:self.image];
+    
+    [self.label1 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.leading.equalTo(self.label1.superview);
+        make.top.equalTo(self.container.mas_top);
+        make.width.equalTo(self.label1.superview);
+        make.height.equalTo(self.label1.superview);
+    }];
+    
+    [self.container mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.container.superview);
+    }];
+    
+    [self.subLabel mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.subLabel.superview);
+    }];
+    
+    [self.subButton mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.subButton.superview);
+    }];
+    
+    [self.subContainer mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.subContainer.superview);
+    }];
+    
+    [self.subLabel2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.subLabel2.superview);
+    }];
+    
+    [self.subButton2 mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.subButton2.superview);
+    }];
+    
+    [self.view mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.view.superview);
+    }];
+    
+    [self.button mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.button.superview);
+    }];
+    
+    [self.image mas_makeConstraints:^(MASConstraintMaker *make) {
+        make.edges.equalTo(self.image.superview);
+    }];
 }
 
 - (void)updateWithModel:(id)model {
@@ -67,7 +108,7 @@
         _label1.font = mSystemFont(123);
         _label1.text = @"1234";
     }
-    return _text;
+    return _label1;
 }
 
 - (UIView *)container {
@@ -77,7 +118,7 @@
         _container.layer.cornerRadius = 4.0;
         _container.layer.masksToBounds = NO;
     }
-    return _layer.masksToBounds;
+    return _container;
 }
 
 - (UILabel *)subLabel {
@@ -87,7 +128,7 @@
         _subLabel.font = mSystemFont(123);
         _subLabel.text = @"1234";
     }
-    return _text;
+    return _subLabel;
 }
 
 - (UIButton *)subButton {
@@ -95,7 +136,7 @@
         _subButton = [UIButton new];
         _subButton.color = [UIColor colorWithHexString:@"ffffff"];
     }
-    return _color;
+    return _subButton;
 }
 
 - (UIView *)subContainer {
@@ -103,7 +144,7 @@
         _subContainer = [UIView new];
         _subContainer.backgroundColor = [UIColor colorWithHexString:@"ffffff"];
     }
-    return _backgroundColor;
+    return _subContainer;
 }
 
 - (UILabel *)subLabel2 {
@@ -113,7 +154,7 @@
         _subLabel2.font = mSystemFont(123);
         _subLabel2.text = @"1234";
     }
-    return _text;
+    return _subLabel2;
 }
 
 - (UIButton *)subButton2 {
@@ -121,7 +162,7 @@
         _subButton2 = [UIButton new];
         _subButton2.color = [UIColor colorWithHexString:@"ffffff"];
     }
-    return _color;
+    return _subButton2;
 }
 
 - (UIView *)view {
@@ -131,7 +172,7 @@
         _view.layer.cornerRadius = 4.0;
         _view.layer.masksToBounds = NO;
     }
-    return _layer.masksToBounds;
+    return _view;
 }
 
 - (UIButton *)button {
@@ -141,7 +182,7 @@
         _button.layer.cornerRadius = 4.0;
         _button.layer.masksToBounds = NO;
     }
-    return _layer.masksToBounds;
+    return _button;
 }
 
 - (UIImageView *)image {
@@ -151,7 +192,7 @@
         _image.layer.cornerRadius = 4.0;
         _image.layer.masksToBounds = NO;
     }
-    return _layer.masksToBounds;
+    return _image;
 }
 
 @end

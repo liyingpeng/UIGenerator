@@ -1,7 +1,7 @@
 //
 //  PUGLiveUserProfileView.h
 //  putong
-//  Created by liyingpeng on 2019/08/19.
+//  Created by liyingpeng on 2019/08/20.
 //  Copyright © 2019 P1. All rights reserved.
 //
 

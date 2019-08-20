@@ -5,7 +5,7 @@ antlr4 -Dlanguage=Python2 ./JSONLexer.g4
 antlr4 -Dlanguage=Python2 ./JSONParser.g4
 co file to Parser
 cd ..
-python UIGenerator.py -f PUGLiveUserProfileView.json -o JSONDemo
+python UIGenerator.py -f json/PUGLiveUserProfileView.json -o output
 
 
 export CLASSPATH=".:/usr/local/lib/antlr-4.7.1-complete.jar:$CLASSPATH"

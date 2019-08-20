@@ -1,0 +1,80 @@
+{
+  "label1" : {
+    "type": "label",
+    "properties" : {
+      "color" : "ffffff",
+      "font" : 123,
+      "text" : "1234"
+    }
+  },
+  "container" : {
+    "type": "view",
+    "subviews": {
+      "subLabel" : {
+        "type": "label",
+        "properties" : {
+          "color" : "ffffff",
+          "font" : 123,
+          "text" : "1234"
+        }
+      },
+      "subButton" : {
+        "type": "button",
+        "properties" : {
+          "color" : "ffffff"
+        }
+      },
+      "subContainer" : {
+        "type": "view",
+        "subviews": {
+          "subLabel2" : {
+            "type": "label",
+            "properties" : {
+              "color" : "ffffff",
+              "font" : 123,
+              "text" : "1234"
+            }
+          },
+          "subButton2" : {
+            "type": "button",
+            "properties" : {
+              "color" : "ffffff"
+            }
+          }
+        },
+        "properties" : {
+          "backgroundColor" : "ffffff"
+        }
+      }
+    },
+    "properties" : {
+      "color" : [123,123,123, 1.0],
+      "layer.cornerRadius" : 4.0,
+      "layer.masksToBounds" : "false"
+    }
+  },
+  "view" : {
+    "type": "view",
+    "properties" : {
+      "color" : [123,123,123, 1.0],
+      "layer.cornerRadius" : 4.0,
+      "layer.masksToBounds" : "false"
+    }
+  },
+  "button" : {
+    "type": "button",
+    "properties" : {
+      "color" : [123,123,123, 1.0],
+      "layer.cornerRadius" : 4.0,
+      "layer.masksToBounds" : "false"
+    }
+  },
+  "image" : {
+    "type": "image",
+    "properties" : {
+      "color" : [123,123,123, 1.0],
+      "layer.cornerRadius" : 4.0,
+      "layer.masksToBounds" : "false"
+    }
+  }
+}

@@ -1,5 +1,5 @@
 {
-  "titleLabel" : {
+  "label1" : {
     "type": "label",
     "properties" : {
       "color" : "ffffff",
@@ -7,11 +7,11 @@
       "text" : "1234"
     }
   },
-  "subTitleLabel" : {
-    "type": "label",
+  "container" : {
+    "type": "view",
     "properties" : {
       "subviews": {
-        "titleSubLabel" : {
+        "subLabel" : {
           "type": "label",
           "properties" : {
             "color" : "ffffff",
@@ -19,12 +19,16 @@
             "text" : "1234"
           }
         },
-        "titleSubLabel2" : {
-          "type": "label",
+        "subButton" : {
+          "type": "button",
           "properties" : {
-            "color" : "ffffff",
-            "font" : 123,
-            "text" : "1234"
+            "color" : "ffffff"
+          }
+        },
+        "subView" : {
+          "type": "view",
+          "properties" : {
+            "backgroundColor" : "ffffff"
           }
         }
       },
@@ -35,7 +39,7 @@
       "text" : "1234"
     }
   },
-  "titleView" : {
+  "view" : {
     "type": "view",
     "properties" : {
       "color" : [123,123,123, 1.0],
@@ -43,7 +47,7 @@
       "layer.masksToBounds" : "false"
     }
   },
-  "titleButton" : {
+  "button" : {
     "type": "button",
     "properties" : {
       "color" : [123,123,123, 1.0],
@@ -51,7 +55,7 @@
       "layer.masksToBounds" : "false"
     }
   },
-  "titleImage" : {
+  "image" : {
     "type": "image",
     "properties" : {
       "color" : [123,123,123, 1.0],

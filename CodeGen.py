@@ -81,7 +81,7 @@ class CodeGen:
 		self.write_blank_lines(1)
 		self.write_line('@interface ' + self.output_file_name + ' ()')
 		self.write_blank_lines(1)
-		self.generatePropertyList()
+		self.generatePropertyListFor(self.parse_tree.pair())
 		self.write_blank_lines(1)
 		self.write_line('@end')
 		self.write_blank_lines(1)
@@ -89,14 +89,18 @@ class CodeGen:
 		self.write_blank_lines(1)
 		self.generateInit()
 		self.write_blank_lines(1)
-		self.generateSetupviews()
+		self.generateSetupviewsFor(self.parse_tree.pair())
 		self.write_blank_lines(1)
 		self.generateUpdateModel()
 		self.write_blank_lines(1)
 		self.write_line('#pragma mark - property getters')
 		self.write_blank_lines(1)
-		self.generateLazilyLoadProperties()
+		self.generateLazilyLoadPropertiesFor(self.parse_tree.pair())
 		self.write_line('@end')
+		pass
+
+	def generateBasicImport(self):
+		self.write_line('#import "UIColor+PUGHex.h"')
 		pass
 
 	def generateInit(self):
@@ -114,60 +118,67 @@ class CodeGen:
 		self.write_line('}')
 		pass
 
-	def generateSetupviews(self):
+	def generateSetupviewsFor(self, controlList):
 		self.write_line('- (void)setupSubviews {')
 		self.push_indent()
-		for control in self.controlList():
-			self.write_line('[self addSubview:self.' + eval(control.key().getText()) + '];')
-		pass
+		self.writeAddSubviewsForControls(controlList)
 		self.pop_indent()
 		self.write_line('}')
 		pass
 
-	def controlList(self):
-		return self.parse_tree.pair()
-
-	def generatePropertyList(self):
-		for control in self.controlList():
-			self.write_line('@property (nonatomic, strong) ' + self.parseControlTypeString(control) + ' *' + eval(control.key().getText()) + ';')
+	def writeAddSubviewsForControls(self, controlList):
+		for control in controlList:
+			subviews = self.subviewsForControl(control)
+			if subviews is not None:
+				self.write_blank_lines(1)
+				self.write_line('[self addSubview:self.' + eval(control.key().getText()) + '];')
+				self.writeAddSubviewsForControls(subviews)
+				self.write_blank_lines(1)
+			else:
+				self.write_line('[self addSubview:self.' + eval(control.key().getText()) + '];')
 		pass
 
-	def typeFor(self, control):
-		if len(control.value().obj().pair()) <= 0:
-			return []
-		return eval(control.value().obj().pair()[0].value().getText())
+	def generatePropertyListFor(self, controlList):
+		for control in controlList:
+			subviews = self.subviewsForControl(control)
+			if subviews is not None:
+				self.write_blank_lines(1)
+				self.write_line('@property (nonatomic, strong) ' + self.parseControlTypeString(control) + ' *' + eval(control.key().getText()) + ';')
+				self.generatePropertyListFor(subviews)
+				self.write_blank_lines(1)
+			else:
+				self.write_line('@property (nonatomic, strong) ' + self.parseControlTypeString(control) + ' *' + eval(control.key().getText()) + ';')
 		pass
 
-	def propertiesFor(self, control):
-		if len(control.value().obj().pair()) <= 1:
-			return []
-		return control.value().obj().pair()[1].value().obj().pair()
-		pass
-
-	def parseControlTypeString(self, control):
-		controlType = self.typeFor(control)
-		if controlType == "label":
-			return "UILabel"
-		elif controlType == "button":
-			return "UIButton"
-		elif controlType == "image":
-			return "UIImageView"
-		elif controlType == "view":
-			return "UIView"
-		return "None"
-		pass
-
-	def generateLazilyLoadProperties(self):
-		for control in self.controlList():
+	def generateLazilyLoadPropertiesFor(self, control_list):
+		for control in control_list:
 			propertyName = eval(control.key().getText())
 			instanceName = '_' + propertyName
+
 			self.write_line('- (' + self.parseControlTypeString(control) + ' *)' + propertyName + ' {')
 			self.push_indent()
 			self.write_line('if (!' + instanceName + ') {')
 			self.push_indent()
 			self.write_line(instanceName + ' = [' + self.parseControlTypeString(control) + ' new];')
 
-			self.setPropertyFor(control, instanceName)
+			properties = self.propertiesForControl(control)
+			for property in properties:
+				propertyName = eval(property.key().getText())
+				propertyValue = eval(property.value().getText())
+				if propertyName == "subviews":
+					subviews = property.value().obj().pair()
+					continue
+					
+				if propertyName == "color" or propertyName == "backgroundColor" or propertyName == "textColor":
+					self.setColorForControl(instanceName, propertyName, propertyValue)
+				elif propertyName == "font":
+					self.setFontForControl(instanceName, propertyName, propertyValue)
+				elif propertyValue == "false" or propertyValue == "true":
+					self.setBoolForControl(instanceName, propertyName, propertyValue)
+				elif isinstance(propertyValue, int) or isinstance(propertyValue, float):
+					self.write_line(instanceName + '.' + propertyName + ' = ' + str(propertyValue) + ';')
+				elif isinstance(propertyValue, str):
+					self.write_line(instanceName + '.' + propertyName + ' = @"' + propertyValue + '";')
 
 			self.pop_indent()
 			self.write_line('}')
@@ -175,6 +186,10 @@ class CodeGen:
 			self.pop_indent()
 			self.write_line('}')
 			self.write_blank_lines(1)
+
+			subviews = self.subviewsForControl(control)
+			if subviews is not None:
+				self.generateLazilyLoadPropertiesFor(subviews)
 		pass
 
 	def generateUpdateModel(self):
@@ -185,26 +200,7 @@ class CodeGen:
 		self.write_line('}')
 		pass
 
-	def setPropertyFor(self, control, instanceName):
-		properties = self.propertiesFor(control)
-		for property in properties:
-			propertyName = eval(property.key().getText())
-			propertyValue = eval(property.value().getText())
-			if propertyName == "color" or propertyName == "backgroundColor" or propertyName == "textColor":
-				self.setColorValueFor(instanceName, propertyName, propertyValue)
-			elif propertyName == "font":
-				self.write_line(instanceName + '.' + propertyName + ' = mSystemFont(' + str(propertyValue) + ');')
-			elif propertyValue == "false":
-				self.write_line(instanceName + '.' + propertyName + ' = NO;')
-			elif propertyValue == "true":
-				self.write_line(instanceName + '.' + propertyName + ' = YES;')
-			elif isinstance(propertyValue, int) or isinstance(propertyValue, float):
-				self.write_line(instanceName + '.' + propertyName + ' = ' + str(propertyValue) + ';')
-			elif isinstance(propertyValue, str):
-				self.write_line(instanceName + '.' + propertyName + ' = @"' + propertyValue + '";')
-		pass
-
-	def setColorValueFor(self, instanceName, propertyName, propertyValue):
+	def setColorForControl(self, instanceName, propertyName, propertyValue):
 		if isinstance(propertyValue, list):
 			if len(propertyValue) == 3:
 				self.write_line(instanceName + '.' + propertyName + ' = mRGBColor(' + str(propertyValue[0]) + ', ' + str(propertyValue[1]) + ', ' + str(propertyValue[2]) + ');')
@@ -216,10 +212,45 @@ class CodeGen:
 			self.write_line(instanceName + '.' + propertyName + ' = [UIColor colorWithHexString:@"' + propertyValue + '"];')
 		pass
 
-	def setBoolValueFor(self, instanceName, propertyName, propertyValue):
+	def setFontForControl(self, instanceName, propertyName, propertyValue):
+		self.write_line(instanceName + '.' + propertyName + ' = mSystemFont(' + str(propertyValue) + ');')
 		pass
 
-	def generateBasicImport(self):
-		self.write_line('#import "UIColor+PUGHex.h"')
+	def setBoolForControl(self, instanceName, propertyName, propertyValue):
+		if propertyValue == "false":
+			self.write_line(instanceName + '.' + propertyName + ' = NO;')
+		elif propertyValue == "true":
+			self.write_line(instanceName + '.' + propertyName + ' = YES;')
 		pass
+
+	def parseControlTypeString(self, control):
+		controlType = self.typeForControl(control)
+		if controlType == "label":
+			return "UILabel"
+		elif controlType == "button":
+			return "UIButton"
+		elif controlType == "image":
+			return "UIImageView"
+		elif controlType == "view":
+			return "UIView"
+		return None
+
+	def typeForControl(self, control):
+		for pairItem in control.value().obj().pair():
+			if eval(pairItem.key().getText()) == "type":
+				return eval(pairItem.value().getText())
+		return None
+
+	def propertiesForControl(self, control):
+		for pairItem in control.value().obj().pair():
+			if eval(pairItem.key().getText()) == "properties":
+				return pairItem.value().obj().pair()
+		return None
+	
+	def subviewsForControl(self, control):
+		for pairItem in control.value().obj().pair():
+			if eval(pairItem.key().getText()) == "subviews":
+				return pairItem.value().obj().pair()
+		return None
+
 

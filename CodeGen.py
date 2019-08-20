@@ -182,7 +182,7 @@ class CodeGen:
 
 			self.pop_indent()
 			self.write_line('}')
-			self.write_line('return _' + propertyName + ';')
+			self.write_line('return ' + instanceName + ';')
 			self.pop_indent()
 			self.write_line('}')
 			self.write_blank_lines(1)
